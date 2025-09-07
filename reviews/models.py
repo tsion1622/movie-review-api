@@ -1,21 +1,42 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
-class Movie(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    release_date = models.DateField()
-
-    def __str__(self):
-        return self.title
+User = get_user_model()
 
 
 class Review(models.Model):
-    movie = models.ForeignKey(Movie, related_name="reviews", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="reviews", on_delete=models.CASCADE)
-    rating = models.IntegerField()
-    comment = models.TextField()
+    movie_title = models.CharField(max_length=255, db_index=True)
+    content = models.TextField()
+    rating = models.PositiveSmallIntegerField()  # 1..5
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["movie_title"]),
+            models.Index(fields=["rating"]),
+        ]
 
     def __str__(self):
-        return f"{self.movie.title} - {self.user.username}"
+        return f"{self.movie_title} – {self.user} ({self.rating}/5)"
+
+
+class ReviewLike(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="likes")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_reviews")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("review", "user")
+
+
+class ReviewComment(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
