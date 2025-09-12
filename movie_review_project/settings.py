@@ -1,6 +1,6 @@
 from pathlib import Path
 import os
-import movie_api
+
 
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -10,7 +10,7 @@ load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+STATIC_URL = "/static/"
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 DEBUG = os.getenv("DEBUG", "True") == "True"
@@ -50,8 +50,16 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = "movie_api.urls"
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "db.sqlite3",
+    }
+}
 
+ROOT_URLCONF = "movie_review_project.urls"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")] 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles") 
 
 TEMPLATES = [
 {
@@ -70,8 +78,18 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = "movie_api.wsgi.application"
-
-
+WSGI_APPLICATION = "movie_review_project.wsgi.application"
 # SQLite for dev; swap to Postgres in production
 OMDB_API_KEY = os.getenv("OMDB_API_KEY", "")
+
+# movie_review_project/settings.py
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5,  # Number of items per page
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+}

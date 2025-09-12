@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db import models
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -21,6 +23,16 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.movie_title} – {self.user} ({self.rating}/5)"
+
+class Movie(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    release_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
 
 
 class ReviewLike(models.Model):
