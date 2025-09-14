@@ -4,9 +4,6 @@ from .models import Movie, Review, ReviewComment, ReviewLike
 
 User = get_user_model()
 
-# -----------------------------
-# User Serializer
-# -----------------------------
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -22,9 +19,6 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return user
 
-# -----------------------------
-# Movie Serializer
-# -----------------------------
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
@@ -55,9 +49,6 @@ class ReviewCommentSerializer(serializers.ModelSerializer):
         model = ReviewComment
         fields = ['id', 'review', 'user', 'content', 'created_at']
 
-# -----------------------------
-# ReviewLike Serializer
-# -----------------------------
 class ReviewLikeSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
 

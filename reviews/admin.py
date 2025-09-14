@@ -29,9 +29,7 @@ class ReviewCommentAdmin(admin.ModelAdmin):
     search_fields = ('content', 'user__username', 'review__movie_title')
     ordering = ('-created_at',)
 
-# -----------------------------
-# ReviewLike Admin
-# -----------------------------
+
 @admin.register(ReviewLike)
 class ReviewLikeAdmin(admin.ModelAdmin):
     list_display = ('review', 'user', 'created_at')
